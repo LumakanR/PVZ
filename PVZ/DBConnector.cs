@@ -126,23 +126,12 @@ namespace PVZ
                 // Вставляем новую запись в таблицу Clients
                 string queryInsert = "INSERT INTO Clients (ClientPhoneNumber) VALUES (@ClientPhoneNumber)";
 
-                if (!dbConnector.IsPhoneAvailable(clientPhoneNumber))
-                {
-
                     using (SqlCommand commandInsert = new SqlCommand(queryInsert, connection))
                 {
                     commandInsert.Parameters.AddWithValue("@ClientPhoneNumber", clientPhoneNumber);
                     commandInsert.ExecuteNonQuery();
 
                     return clientPhoneNumber;
-                }
-
-                }
-                else
-                {
-                    // Отобразить окно ошибки, если ячейка занята
-                    MessageBox.Show("Данный номер уже используется", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return "null";
                 }
             }
         }
