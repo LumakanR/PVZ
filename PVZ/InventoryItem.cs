@@ -8,10 +8,12 @@ namespace PVZ
 {
     public class InventoryItem
     {
-        public int OrderID { get; set; }
+        public string OrderNumber { get; set; }
         public DateTime ArrivedDate { get; set; }
         public string Status { get; set; }
-        public int CellNumber { get; set; }
+        public string ClientPhoneNumber { get; set; }
+        public int RackID { get; set; }
+        public int CellID { get; set; }
         public int StoragePeriod { get; set; } // Период хранения в днях
 
         public DateTime ExpirationDate { get { return ArrivedDate.AddDays(StoragePeriod); } } // Дата истечения срока годности

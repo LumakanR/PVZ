@@ -19,8 +19,11 @@ namespace PVZ
     /// </summary>
     public partial class LogInWindow : Window
     {
+        private DBConnector dbConnector;
         public LogInWindow()
         {
+            // Инициализация экземпляра DBConnector
+            dbConnector = new DBConnector();
             InitializeComponent();
         }
 
@@ -28,8 +31,16 @@ namespace PVZ
         {
             string username = txtUsername.Text;
             string password = txtPassword.Text;
+            // Проверяем, является ли текущий пользователь менеджером
+            bool isManager = DBConnector.ValidateUser(username, password) && username == "admin" && password == "admin";
+            if (isManager)
+            {
 
-            if (DBConnector.ValidateUser(username, password))
+                MainWindowAdmin mainWindow = new MainWindowAdmin();
+                mainWindow.Show();
+                Close();
+            }
+            else if (DBConnector.ValidateUser(username, password))
             {
                 MainWindow mainWindow = new MainWindow();
                 mainWindow.Show();

@@ -14,7 +14,7 @@
             <TextBlock Text="Назад" TextWrapping="Wrap" TextTrimming="WordEllipsis" FontSize="24" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"/>
         </Button>
         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-            <Label Content="Номер заказа:"/>
+            <Label Content="Номер телефона:"/>
             <TextBox Name="txtOrderId" Margin="5" Width="400"/>
             <Button Content="Выдать заказ" Click="Button_DeliverOrder_Click" Margin="5"/>
         </StackPanel>

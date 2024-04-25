@@ -15,12 +15,8 @@
         <TextBox IsReadOnly="False" Name="txtIdOrder" HorizontalAlignment="Left" Margin="655,50,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="798" FontSize="24" Height="43" AutomationProperties.ItemStatus="" MaxLines="1"/>
 
 
-        <Label Content="Номер телефона" HorizontalAlignment="Left" Margin="443,651,0,0" VerticalAlignment="Top" Width="207" Height="43" FontSize="24"/>
-        <TextBox IsReadOnly="False" Name="txtPhoneNumber" HorizontalAlignment="Left" Margin="655,651,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="798" FontSize="24" Height="43" AutomationProperties.ItemStatus="" MaxLines="1"/>
-
-
-        <Label Content="Либо введите номер ячейки самостоятельно:" HorizontalAlignment="Left" Margin="798,343,0,0" VerticalAlignment="Top" Width="512" Height="43" FontSize="24"/>
-        <TextBox Name="txtCustomCell" HorizontalAlignment="Left" Margin="655,398,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="798" FontSize="24" Height="43" AutomationProperties.ItemStatus="" MaxLines="1"/>
+        <Label Content="Номер телефона в формате +7(XXX)XXXXXXX:" HorizontalAlignment="Left" Margin="136,447,0,0" VerticalAlignment="Top" Width="514" Height="43" FontSize="24"/>
+        <TextBox IsReadOnly="False" Name="txtPhoneNumber" HorizontalAlignment="Left" Margin="655,447,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="798" FontSize="24" Height="43" AutomationProperties.ItemStatus="" MaxLines="1"/>
 
 
         <Label Content="Статус" HorizontalAlignment="Left" Margin="463,212,0,0" VerticalAlignment="Top" Width="187" Height="43" FontSize="24"/>
@@ -34,8 +30,30 @@
         <Label Content="Номер стеллажа" HorizontalAlignment="Left" Margin="453,286,0,0" VerticalAlignment="Top" Width="202" Height="43" FontSize="24"/>
         <TextBox IsReadOnly="False" Name="txtRack" HorizontalAlignment="Left" Margin="655,286,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="798" FontSize="24" Height="43" AutomationProperties.ItemStatus="" MaxLines="1"/>
 
-        <Label Content="Номер ячейки" HorizontalAlignment="Left" Margin="453,489,0,0" VerticalAlignment="Top" Width="202" Height="43" FontSize="24"/>
-        <TextBox IsReadOnly="False" Name="txtCell" HorizontalAlignment="Left" Margin="655,489,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="798" FontSize="24" Height="43" AutomationProperties.ItemStatus="" MaxLines="1"/>
+        <Label Content="Номер ячейки" HorizontalAlignment="Left" Margin="448,366,0,0" VerticalAlignment="Top" Width="202" Height="43" FontSize="24"/>
+        <TextBox IsReadOnly="False" Name="txtCell" HorizontalAlignment="Left" Margin="650,366,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="798" FontSize="24" Height="43" AutomationProperties.ItemStatus="" MaxLines="1"/>
+
+        <!-- Переключатель между ручным и автоматическим вводом данных -->
+        <RadioButton x:Name="radioManual" Content="Ручной ввод" Checked="radioManual_Checked" IsChecked="True" HorizontalAlignment="Left" Margin="655,615,0,0" VerticalAlignment="Top">
+            <RadioButton.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform ScaleX="1.5" ScaleY="1.5"/>
+                    <SkewTransform/>
+                    <RotateTransform/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </RadioButton.RenderTransform>
+        </RadioButton>
+        <RadioButton x:Name="radioAuto" Content="Автоматический ввод" Checked="radioAuto_Checked" HorizontalAlignment="Left" Margin="1244,615,0,0" VerticalAlignment="Top">
+            <RadioButton.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform ScaleX="1.5" ScaleY="1.5"/>
+                    <SkewTransform/>
+                    <RotateTransform/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </RadioButton.RenderTransform>
+        </RadioButton>
 
         <Button Height="128" Width="1086"  HorizontalAlignment="Center" VerticalAlignment="Top" Click="Button_Click" RenderTransformOrigin="0.497,1.211" Margin="0,786,0,0">
             <TextBlock Text="Зарегистрировать" TextWrapping="Wrap" TextTrimming="WordEllipsis" FontSize="24" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"/>

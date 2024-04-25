@@ -16,10 +16,12 @@
         <ListView x:Name="InventoryListView" Margin="0,72,0,0">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="Order ID" DisplayMemberBinding="{Binding OrderID}" />
+                    <GridViewColumn Header="Order Number" DisplayMemberBinding="{Binding OrderNumber}" />
                     <GridViewColumn Header="Arrived Date" DisplayMemberBinding="{Binding ArrivedDate}" />
                     <GridViewColumn Header="Status" DisplayMemberBinding="{Binding Status}" />
-                    <GridViewColumn Header="Cell Number" DisplayMemberBinding="{Binding CellNumber}" />
+                    <GridViewColumn Header="ClientPhoneNumber" DisplayMemberBinding="{Binding ClientPhoneNumber}" />
+                    <GridViewColumn Header="RackID" DisplayMemberBinding="{Binding RackID}" />
+                    <GridViewColumn Header="CellID" DisplayMemberBinding="{Binding CellID}" />
                     <GridViewColumn Header="Remaining Days">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>

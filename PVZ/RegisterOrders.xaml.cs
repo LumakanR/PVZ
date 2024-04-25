@@ -1,17 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data.Common;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace PVZ
 {
@@ -36,7 +24,7 @@ namespace PVZ
             txtStatus.Text = "Поступил";
 
             // Получение номера ячейки
-            int cellNumber = GetNextCellNumber();
+            int cellNumber = dbConnector.GetNextCellNumber();
 
             // Отображение номера ячейки в поле txtCell
             txtCell.Text = cellNumber.ToString();
@@ -55,7 +43,7 @@ namespace PVZ
             int cellNumber = int.Parse(txtCell.Text);
 
             // Проверка доступности ячейки
-            if (IsCellAvailable(cellNumber))
+            if (dbConnector.IsCellAvailable(cellNumber))
             {
                 // Создание объекта Order
                 Order order = new Order
@@ -68,8 +56,7 @@ namespace PVZ
                     RackID = rackNumber
                 };
 
-
-                // Добавление заказа в базу данных с увеличенным OrderID и номером ячейки
+                // Добавление заказа в базу данных
                 DBConnector.AddOrder(order);
 
                 // Обновление txtIdOrder
@@ -77,21 +64,17 @@ namespace PVZ
 
                 // Обновление всех данных
                 ShowAllData();
-                // Сброс пользовательского номера ячейки
-                txtCustomCell.Clear();
             }
             else
             {
                 // Отображение окна ошибки, если ячейка занята
                 MessageBox.Show("Данная ячейка уже занята", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-
         }
 
 
         private int GetNextCellNumber()
         {
-            // Получение следующего доступного номера ячейки
             return 123;
         }
 
@@ -100,8 +83,6 @@ namespace PVZ
             // Проверка, свободна ли ячейка
             return dbConnector.IsCellAvailable(cellNumber);
         }
-
-        
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
@@ -113,6 +94,22 @@ namespace PVZ
 
             // Закрытие текущего окна
             this.Close();
+        }
+
+        private void radioManual_Checked(object sender, RoutedEventArgs e)
+        {
+            // Установить поля для ручного ввода в режим редактирования
+            txtPhoneNumber.IsReadOnly = false;
+            txtRack.IsReadOnly = false;
+            txtCell.IsReadOnly = false;
+        }
+
+        private void radioAuto_Checked(object sender, RoutedEventArgs e)
+        {
+            // Установить поля для автоматического ввода в режим только для чтения
+            txtPhoneNumber.IsReadOnly = false;
+            txtRack.IsReadOnly = true;
+            txtCell.IsReadOnly = true;
         }
     }
 }

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Data.SqlClient;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace PVZ
 {
@@ -52,20 +54,95 @@ namespace PVZ
             }
         }
 
-        public static string AddClient(string clientPhoneNumber)
+        public void ChangePassword(string username, string newPassword)
         {
             using (SqlConnection connection = new SqlConnection(ConnectionString))
             {
                 connection.Open();
+
+                // Обновляем пароль пользователя в базе данных
+                string query = "UPDATE Users SET Password = @NewPassword WHERE Username = @Username";
+
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@NewPassword", newPassword);
+                    command.Parameters.AddWithValue("@Username", username);
+
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public void AddUser(string username, string password)
+        {
+            using (SqlConnection connection = new SqlConnection(ConnectionString))
+            {
+                connection.Open();
+
+                // Проверяем, существует ли пользователь с таким именем
+                if (UserExists(username))
+                {
+                    MessageBox.Show("Пользователь с таким именем уже существует", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                // Добавляем нового пользователя в базу данных
+                string query = "INSERT INTO Users (Username, Password) VALUES (@Username, @Password)";
+
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@Username", username);
+                    command.Parameters.AddWithValue("@Password", password);
+
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
+        private bool UserExists(string username)
+        {
+            using (SqlConnection connection = new SqlConnection(ConnectionString))
+            {
+                connection.Open();
+
+                // Проверяем, существует ли пользователь с указанным именем
+                string query = "SELECT COUNT(*) FROM Users WHERE Username = @Username";
+
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@Username", username);
+                    int count = Convert.ToInt32(command.ExecuteScalar());
+                    return count > 0;
+                }
+            }
+        }
+
+        public static string AddClient(string clientPhoneNumber)
+        {
+            using (SqlConnection connection = new SqlConnection(ConnectionString))
+            {
+                DBConnector dbConnector = new DBConnector();
+                connection.Open();
                 // Вставляем новую запись в таблицу Clients
                 string queryInsert = "INSERT INTO Clients (ClientPhoneNumber) VALUES (@ClientPhoneNumber)";
 
-                using (SqlCommand commandInsert = new SqlCommand(queryInsert, connection))
+                if (!dbConnector.IsPhoneAvailable(clientPhoneNumber))
+                {
+
+                    using (SqlCommand commandInsert = new SqlCommand(queryInsert, connection))
                 {
                     commandInsert.Parameters.AddWithValue("@ClientPhoneNumber", clientPhoneNumber);
                     commandInsert.ExecuteNonQuery();
 
                     return clientPhoneNumber;
+                }
+
+                }
+                else
+                {
+                    // Отобразить окно ошибки, если ячейка занята
+                    MessageBox.Show("Данный номер уже используется", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return "null";
                 }
             }
         }
@@ -104,7 +181,7 @@ namespace PVZ
                 connection.Open();
 
                 // Проверяем доступность ячейки
-                if (dbConnector.IsCellAvailable(order.CellID))
+                if (dbConnector.IsCellAvailable(order.CellID) || clientPhoneNumber == "null")
                 {
                     // Добавляем заказ с полученным ClientID, OrderID и номером ячейки
                     string query = "INSERT INTO Orders (OrderNumber, ArrivedDate, Status, ClientPhoneNumber, RackID, CellID) " +
@@ -120,6 +197,11 @@ namespace PVZ
                         command.Parameters.AddWithValue("@CellID", order.CellID);
                         command.ExecuteNonQuery();
                     }
+                }
+                else if (clientPhoneNumber == null)
+                {
+                    // Отобразить окно ошибки, если ячейка занята
+                    MessageBox.Show("Данный телефон уже занят", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 else
                 {
@@ -142,6 +224,24 @@ namespace PVZ
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@CellID", cellNumber);
+                    int count = Convert.ToInt32(command.ExecuteScalar());
+                    return count == 0; // Возвращаем true, если ячейка свободна
+                }
+            }
+        }
+
+        public bool IsPhoneAvailable(string cellNumber)
+        {
+            using (SqlConnection connection = new SqlConnection(ConnectionString))
+            {
+                connection.Open();
+
+                // Проверяем, существует ли указанная ячейка
+                string query = "SELECT COUNT(*) FROM Orders WHERE ClientPhoneNumber = @ClientPhoneNumber";
+
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@ClientPhoneNumber", cellNumber);
                     int count = Convert.ToInt32(command.ExecuteScalar());
                     return count == 0; // Возвращаем true, если ячейка свободна
                 }
@@ -171,7 +271,7 @@ namespace PVZ
             {
                 connection.Open();
 
-                string query = "SELECT Orders.OrderID, Orders.ArrivedDate, Orders.Status, Orders.CellNumber FROM Orders";
+                string query = "SELECT Orders.OrderNumber, Orders.ArrivedDate, Orders.Status, Orders.ClientPhoneNumber, Orders.RackID, Orders.CellID  FROM Orders";
 
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
@@ -181,10 +281,12 @@ namespace PVZ
                         {
                             InventoryItem item = new InventoryItem
                             {
-                                OrderID = reader.GetInt32(0),
+                                OrderNumber = reader.GetString(0),
                                 ArrivedDate = reader.GetDateTime(1),
                                 Status = reader.GetString(2),
-                                CellNumber = reader.GetInt32(3)
+                                ClientPhoneNumber = reader.GetString(3),
+                                RackID = reader.GetInt32(4),
+                                CellID = reader.GetInt32(5),
                             };
 
                             inventoryData.Add(item);
@@ -195,7 +297,7 @@ namespace PVZ
 
             return inventoryData;
         }
-        public bool DeliverOrder(int orderId)
+        public bool DeliverOrder(string phoneNumber)
         {
             try
             {
@@ -204,10 +306,10 @@ namespace PVZ
                     connection.Open();
 
                     // Проверяем, существует ли заказ с указанным номером
-                    string checkOrderQuery = "SELECT COUNT(*) FROM Orders WHERE OrderID = @OrderId";
+                    string checkOrderQuery = "SELECT COUNT(*) FROM Orders WHERE ClientPhoneNumber = @ClientPhoneNumber";
                     using (SqlCommand checkOrderCommand = new SqlCommand(checkOrderQuery, connection))
                     {
-                        checkOrderCommand.Parameters.AddWithValue("@OrderId", orderId);
+                        checkOrderCommand.Parameters.AddWithValue("@ClientPhoneNumber", phoneNumber);
                         int orderCount = Convert.ToInt32(checkOrderCommand.ExecuteScalar());
 
                         // Если заказ с указанным номером не найден, возвращаем false
@@ -218,10 +320,10 @@ namespace PVZ
                     }
 
                     // Удаляем заказ из базы данных
-                    string deleteOrderQuery = "DELETE FROM Orders WHERE OrderID = @OrderId";
+                    string deleteOrderQuery = "DELETE FROM Orders WHERE ClientPhoneNumber = @ClientPhoneNumber";
                     using (SqlCommand deleteOrderCommand = new SqlCommand(deleteOrderQuery, connection))
                     {
-                        deleteOrderCommand.Parameters.AddWithValue("@OrderId", orderId);
+                        deleteOrderCommand.Parameters.AddWithValue("@ClientPhoneNumber", phoneNumber);
                         deleteOrderCommand.ExecuteNonQuery();
                     }
 
@@ -246,7 +348,7 @@ namespace PVZ
                 {
                     connection.Open();
 
-                    string query = "SELECT OrderID, ArrivedDate, Status, CellNumber FROM Orders";
+                    string query = "SELECT OrderNumber, ArrivedDate, Status, ClientPhoneNumber, RackID, CellID FROM Orders";
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
                         using (SqlDataReader reader = command.ExecuteReader())
@@ -255,10 +357,12 @@ namespace PVZ
                             {
                                 InventoryItem item = new InventoryItem
                                 {
-                                    OrderID = reader.GetInt32(0),
+                                    OrderNumber = reader.GetString(0),
                                     ArrivedDate = reader.GetDateTime(1),
                                     Status = reader.GetString(2),
-                                    CellNumber = reader.GetInt32(3)
+                                    ClientPhoneNumber = reader.GetString(3),
+                                    RackID = reader.GetInt32(4),
+                                    CellID = reader.GetInt32(5),
                                 };
                                 inventoryItems.Add(item);
                             }
@@ -272,6 +376,21 @@ namespace PVZ
             }
 
             return inventoryItems;
+        }
+
+        public int GetNextCellNumber()
+        {
+            using (SqlConnection connection = new SqlConnection(ConnectionString))
+            {
+                connection.Open();
+
+                string query = "SELECT ISNULL(MAX(CellID), 0) + 1 FROM StorageRacks";
+
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    return Convert.ToInt32(command.ExecuteScalar());
+                }
+            }
         }
     }
 }

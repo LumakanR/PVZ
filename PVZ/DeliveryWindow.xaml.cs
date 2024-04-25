@@ -30,11 +30,11 @@ namespace PVZ
             DBConnector dbConnector = new DBConnector();
 
             // Получение номера заказа из текстового поля
-            int orderId;
-            if (int.TryParse(txtOrderId.Text, out orderId))
-            {
+            string phoneNumber = txtOrderId.Text;
+
+
                 // Выполнение логики выдачи заказа с освобождением ячейки склада
-                if (dbConnector.DeliverOrder(orderId))
+                if (dbConnector.DeliverOrder(phoneNumber))
                 {
                     MessageBox.Show("Заказ успешно выдан.", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
                     // Закрытие окна после успешной выдачи заказа
@@ -44,11 +44,7 @@ namespace PVZ
                 {
                     MessageBox.Show("Не удалось выдать заказ. Проверьте номер заказа и повторите попытку.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
-            }
-            else
-            {
-                MessageBox.Show("Введите корректный номер заказа.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)

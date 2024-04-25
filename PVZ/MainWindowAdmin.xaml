@@ -1,10 +1,11 @@
-﻿<Window x:Class="PVZ.MainWindow"
+﻿<Window x:Class="PVZ.MainWindowAdmin"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PVZ"
         mc:Ignorable="d"
-        Title="MainWindow" Height="720" Width="1080"
+        Title="MainWindowAdmin" Height="720" Width="1080"
         WindowStartupLocation="CenterScreen"
         MinHeight="720"
         MinWidth="1080">
@@ -15,6 +16,7 @@
         <Button Content="Учет склада" Margin="78,314,0,0" Height="150" Width="350" FontSize="24" HorizontalAlignment="Left" VerticalContentAlignment="Center" VerticalAlignment="Top" Click="Button_Click_2"/>
         <Button Content="Выдача заказа" Margin="652,105,0,0" Height="150" Width="350" FontSize="24" HorizontalAlignment="Left" VerticalContentAlignment="Center" VerticalAlignment="Top" Click="Button_Click_3"/>
         <Button Content="Отчеты" Margin="652,314,0,0" Height="150" Width="350" FontSize="24" HorizontalAlignment="Left" VerticalContentAlignment="Center" VerticalAlignment="Top" Click="Button_Click_4"/>
-        <Button Content="Сменить пароль" Margin="0,500,0,0" Height="80" Width="924" FontSize="24" HorizontalAlignment="Center" VerticalContentAlignment="Center" VerticalAlignment="Top" Click="Button_Click_5"/>
+        <Button Content="Сменить пароль" Margin="78,524,0,0" Height="136" Width="350" FontSize="24" HorizontalAlignment="Left" VerticalContentAlignment="Center" VerticalAlignment="Top" Click="Button_Click_5"/>
+        <Button Content="Добавить пользователя" Margin="652,524,0,0" Height="136" Width="350" FontSize="24" HorizontalAlignment="Left" VerticalContentAlignment="Center" VerticalAlignment="Top" Click="Button_Click_6"/>
     </Grid>
 </Window>

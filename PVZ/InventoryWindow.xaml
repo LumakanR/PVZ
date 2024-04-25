@@ -15,10 +15,12 @@
         </Button>
         <DataGrid x:Name="dgInventory" AutoGenerateColumns="False" Margin="0,69,0,0">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Order ID" Binding="{Binding OrderID}" />
+                <DataGridTextColumn Header="Order Number" Binding="{Binding OrderNumber}" />
                 <DataGridTextColumn Header="Arrived Date" Binding="{Binding ArrivedDate}" />
                 <DataGridTextColumn Header="Status" Binding="{Binding Status}" />
-                <DataGridTextColumn Header="Cell Number" Binding="{Binding CellNumber}" />
+                <DataGridTextColumn Header="ClientPhoneNumber" Binding="{Binding ClientPhoneNumber}" />
+                <DataGridTextColumn Header="RackID" Binding="{Binding RackID}" />
+                <DataGridTextColumn Header="CellID" Binding="{Binding CellID}" />
             </DataGrid.Columns>
         </DataGrid>
     </Grid>
