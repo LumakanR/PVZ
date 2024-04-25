@@ -13,9 +13,6 @@ namespace PVZ
 
             // Инициализация экземпляра DBConnector
             dbConnector = new DBConnector();
-
-            // Отображение всех данных при инициализации
-            ShowAllData();
         }
 
         private void ShowAllData()
@@ -26,11 +23,15 @@ namespace PVZ
             // Получение номера ячейки
             int cellNumber = dbConnector.GetNextCellNumber();
 
+            int rackNumber = dbConnector.GetNextRackNumber();
+
             // Отображение номера ячейки в поле txtCell
             txtCell.Text = cellNumber.ToString();
 
             // Отображение текущей даты
             txtData.Text = DateTime.Today.ToShortDateString();
+
+            txtRack.Text = rackNumber.ToString();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -73,17 +74,6 @@ namespace PVZ
         }
 
 
-        private int GetNextCellNumber()
-        {
-            return 123;
-        }
-
-        private bool IsCellAvailable(int cellNumber)
-        {
-            // Проверка, свободна ли ячейка
-            return dbConnector.IsCellAvailable(cellNumber);
-        }
-
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
             // Создание экземпляра главного окна
@@ -106,6 +96,7 @@ namespace PVZ
 
         private void radioAuto_Checked(object sender, RoutedEventArgs e)
         {
+            ShowAllData();
             // Установить поля для автоматического ввода в режим только для чтения
             txtPhoneNumber.IsReadOnly = false;
             txtRack.IsReadOnly = true;

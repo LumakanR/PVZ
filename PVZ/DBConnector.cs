@@ -251,6 +251,20 @@ namespace PVZ
                 }
             }
         }
+        public int GetLastRackId()
+        {
+            using (SqlConnection connection = new SqlConnection(DBConnector.ConnectionString))
+            {
+                connection.Open();
+
+                string query = "SELECT ISNULL(MAX(RackID), 0) FROM Orders";
+
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    return Convert.ToInt32(command.ExecuteScalar());
+                }
+            }
+        }
 
         public List<InventoryItem> GetInventoryData()
         {
@@ -368,6 +382,21 @@ namespace PVZ
         }
 
         public int GetNextCellNumber()
+        {
+            using (SqlConnection connection = new SqlConnection(ConnectionString))
+            {
+                connection.Open();
+
+                string query = "SELECT ISNULL(MAX(CellID), 0) + 1 FROM StorageRacks";
+
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    return Convert.ToInt32(command.ExecuteScalar());
+                }
+            }
+        }
+
+        public int GetNextRackNumber()
         {
             using (SqlConnection connection = new SqlConnection(ConnectionString))
             {
