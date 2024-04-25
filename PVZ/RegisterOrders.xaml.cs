@@ -35,10 +35,6 @@ namespace PVZ
             // Установка начального значения txtStatus
             txtStatus.Text = "Поступил";
 
-            // Получение и отображение последнего OrderID
-            int lastOrderId = dbConnector.GetLastOrderId();
-            txtIdOrder.Text = lastOrderId.ToString();
-
             // Получение номера ячейки
             int cellNumber = GetNextCellNumber();
 
@@ -51,25 +47,12 @@ namespace PVZ
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-
             string date = txtData.Text;
             string status = txtStatus.Text;
-
-            // Получение текущего OrderID
-            int currentOrderId = int.Parse(txtIdOrder.Text);
-
-            // Получение номера ячейки
-            int cellNumber;
-            if (!string.IsNullOrWhiteSpace(txtCustomCell.Text))
-            {
-                // Используем значение из поля txtCustomCell, если оно не пустое
-                cellNumber = int.Parse(txtCustomCell.Text);
-            }
-            else
-            {
-                // Используем значение из поля txtCell
-                cellNumber = GetNextCellNumber();
-            }
+            string phoneNumber = txtPhoneNumber.Text;
+            string orderNumber = txtIdOrder.Text;
+            int rackNumber = int.Parse(txtRack.Text);
+            int cellNumber = int.Parse(txtCell.Text);
 
             // Проверка доступности ячейки
             if (IsCellAvailable(cellNumber))
@@ -77,18 +60,20 @@ namespace PVZ
                 // Создание объекта Order
                 Order order = new Order
                 {
+                    OrderID = orderNumber,
                     ArrivedDate = DateTime.Parse(date),
                     Status = status,
+                    ClientPhoneNumber = phoneNumber,
+                    CellID = cellNumber,
+                    RackID = rackNumber
                 };
 
-                // Увеличение текущего OrderID на 1
-                int nextOrderId = currentOrderId + 1;
 
                 // Добавление заказа в базу данных с увеличенным OrderID и номером ячейки
-                DBConnector.AddOrder(order, nextOrderId, cellNumber);
+                DBConnector.AddOrder(order);
 
                 // Обновление txtIdOrder
-                txtIdOrder.Text = nextOrderId.ToString();
+                txtIdOrder.Text = orderNumber.ToString();
 
                 // Обновление всех данных
                 ShowAllData();
@@ -107,7 +92,7 @@ namespace PVZ
         private int GetNextCellNumber()
         {
             // Получение следующего доступного номера ячейки
-            return dbConnector.GetNextCellNumber();
+            return 123;
         }
 
         private bool IsCellAvailable(int cellNumber)
@@ -115,6 +100,8 @@ namespace PVZ
             // Проверка, свободна ли ячейка
             return dbConnector.IsCellAvailable(cellNumber);
         }
+
+        .
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {

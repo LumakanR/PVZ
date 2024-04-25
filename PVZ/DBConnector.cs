@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
 using System.Windows;
 
 namespace PVZ
@@ -35,62 +31,93 @@ namespace PVZ
             return sqlConnection;
         }
 
-        public static int AddClient()
+        public static bool ValidateUser(string username, string password)
         {
             using (SqlConnection connection = new SqlConnection(ConnectionString))
             {
                 connection.Open();
 
-                // Получаем максимальный ClientID из таблицы Clients
-                string queryMaxID = "SELECT COALESCE(MAX(ClientID), 0) FROM Clients";
+                string query = "SELECT * FROM Users WHERE Username = @Username AND Password = @Password";
 
-                using (SqlCommand commandMaxID = new SqlCommand(queryMaxID, connection))
+                using (SqlCommand command = new SqlCommand(query, connection))
                 {
-                    int maxID = Convert.ToInt32(commandMaxID.ExecuteScalar());
+                    command.Parameters.AddWithValue("@Username", username);
+                    command.Parameters.AddWithValue("@Password", password);
 
-                    // Увеличиваем максимальный ClientID на 1
-                    int newID = maxID + 1;
-
-                    // Вставляем новую запись в таблицу Clients
-                    string queryInsert = "INSERT INTO Clients (ClientID) VALUES (@ClientID)";
-
-                    using (SqlCommand commandInsert = new SqlCommand(queryInsert, connection))
+                    using (SqlDataReader reader = command.ExecuteReader())
                     {
-                        commandInsert.Parameters.AddWithValue("@ClientID", newID);
-                        commandInsert.ExecuteNonQuery();
-
-                        return newID;
+                        return reader.HasRows;
                     }
                 }
             }
         }
 
-        public static void AddOrder(Order order, int orderId, int cellNumber)
+        public static string AddClient(string clientPhoneNumber)
+        {
+            using (SqlConnection connection = new SqlConnection(ConnectionString))
+            {
+                connection.Open();
+                // Вставляем новую запись в таблицу Clients
+                string queryInsert = "INSERT INTO Clients (ClientPhoneNumber) VALUES (@ClientPhoneNumber)";
+
+                using (SqlCommand commandInsert = new SqlCommand(queryInsert, connection))
+                {
+                    commandInsert.Parameters.AddWithValue("@ClientPhoneNumber", clientPhoneNumber);
+                    commandInsert.ExecuteNonQuery();
+
+                    return clientPhoneNumber;
+                }
+            }
+        }
+
+        public static int AddRack(int rackID, int cellID)
+        {
+            using (SqlConnection connection = new SqlConnection(ConnectionString))
+            {
+                connection.Open();
+
+                string queryInsert = "INSERT INTO StorageRacks (RackID, CellID, isAvailable) VALUES (@RackID, @CellID, @isAvailable)";
+
+                using (SqlCommand commandInsert = new SqlCommand(queryInsert, connection))
+                {
+                    commandInsert.Parameters.AddWithValue("@RackID", rackID);
+                    commandInsert.Parameters.AddWithValue("@CellID", cellID);
+                    commandInsert.Parameters.AddWithValue("@isAvailable", 0);
+                    commandInsert.ExecuteNonQuery();
+
+                    return rackID;
+                }
+            }
+        }
+
+        public static void AddOrder(Order order)
         {
             // Создаем новый экземпляр DBConnector
             DBConnector dbConnector = new DBConnector();
 
             // Создаем нового клиента и получаем его ClientID
-            int clientID = AddClient();
+            string clientPhoneNumber = AddClient(order.ClientPhoneNumber);
+            int rackID = AddRack(order.RackID, order.CellID);
 
             using (SqlConnection connection = new SqlConnection(ConnectionString))
             {
                 connection.Open();
 
                 // Проверяем доступность ячейки
-                if (dbConnector.IsCellAvailable(cellNumber))
+                if (dbConnector.IsCellAvailable(order.CellID))
                 {
                     // Добавляем заказ с полученным ClientID, OrderID и номером ячейки
-                    string query = "INSERT INTO Orders (OrderID, ArrivedDate, Status, CellNumber, ClientID) " +
-                                   "VALUES (@OrderID, @ArrivedDate, @Status, @CellNumber, @ClientID)";
+                    string query = "INSERT INTO Orders (OrderNumber, ArrivedDate, Status, ClientPhoneNumber, RackID, CellID) " +
+                                   "VALUES (@OrderNumber, @ArrivedDate, @Status, @ClientPhoneNumber, @RackID, @CellID)";
 
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
-                        command.Parameters.AddWithValue("@OrderID", orderId); // Передаем OrderID
+                        command.Parameters.AddWithValue("@OrderNumber", order.OrderID); // Передаем OrderNumber
                         command.Parameters.AddWithValue("@ArrivedDate", order.ArrivedDate);
                         command.Parameters.AddWithValue("@Status", order.Status);
-                        command.Parameters.AddWithValue("@CellNumber", cellNumber); // Передаем номер ячейки
-                        command.Parameters.AddWithValue("@ClientID", clientID); // Используем полученный ClientID
+                        command.Parameters.AddWithValue("@ClientPhoneNumber", clientPhoneNumber);
+                        command.Parameters.AddWithValue("@RackID", rackID);
+                        command.Parameters.AddWithValue("@CellID", order.CellID);
                         command.ExecuteNonQuery();
                     }
                 }
@@ -103,22 +130,6 @@ namespace PVZ
         }
 
 
-        public int GetNextCellNumber()
-        {
-            using (SqlConnection connection = new SqlConnection(ConnectionString))
-            {
-                connection.Open();
-
-                // Получаем минимальный доступный номер ячейки
-                string query = "SELECT COALESCE(MIN(CellNumber + 1), 1) FROM Orders AS o1 WHERE NOT EXISTS (SELECT * FROM Orders AS o2 WHERE o2.CellNumber = o1.CellNumber + 1)";
-
-                using (SqlCommand command = new SqlCommand(query, connection))
-                {
-                    return Convert.ToInt32(command.ExecuteScalar());
-                }
-            }
-        }
-
         public bool IsCellAvailable(int cellNumber)
         {
             using (SqlConnection connection = new SqlConnection(ConnectionString))
@@ -126,11 +137,11 @@ namespace PVZ
                 connection.Open();
 
                 // Проверяем, существует ли указанная ячейка
-                string query = "SELECT COUNT(*) FROM Orders WHERE CellNumber = @CellNumber";
+                string query = "SELECT COUNT(*) FROM Orders WHERE CellID = @CellID";
 
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@CellNumber", cellNumber);
+                    command.Parameters.AddWithValue("@CellID", cellNumber);
                     int count = Convert.ToInt32(command.ExecuteScalar());
                     return count == 0; // Возвращаем true, если ячейка свободна
                 }

@@ -8,12 +8,13 @@ namespace PVZ
 {
     public class Order
     {
-        public int OrderID { get; set; }
+        public string OrderID { get; set; }
         public DateTime ArrivedDate { get; set; }
         public string Status { get; set; }
 
-        public int CellNumber { get; set; }
+        public string ClientPhoneNumber { get; set; }
 
-        public int ClientID { get; set; }
+        public int RackID { get; set; }
+        public int CellID { get; set; }
     }
 }
