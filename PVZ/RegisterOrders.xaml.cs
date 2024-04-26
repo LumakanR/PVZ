@@ -1,4 +1,6 @@
-﻿using System;
+﻿using IronPython.Hosting;
+using Microsoft.Scripting.Hosting;
+using System;
 using System.Windows;
 
 namespace PVZ
@@ -33,9 +35,11 @@ namespace PVZ
 
             txtRack.Text = rackNumber.ToString();
         }
+        
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+
             string date = txtData.Text;
             string status = txtStatus.Text;
             string phoneNumber = txtPhoneNumber.Text;
