@@ -24,11 +24,40 @@ namespace PVZ
     public partial class Dashboard : Window
     {
         private DBConnector dbConnector;
+        public List<Inventory> InventoryData { get; set; }
+
+
+        public SeriesCollection OrderSeries { get; set; }
+        public string[] Labels { get; set; }
+        public Func<double, string> Formatter { get; set; }
+
+        public class OrderData
+        {
+            public string Month { get; set; }
+            public int OrdersReceived { get; set; }
+        }
 
         public Dashboard()
         {
             InitializeComponent();
             dbConnector = new DBConnector();
+            DataContext = new ChartViewModel();
+            OrderDataAccess dataAccess = new OrderDataAccess();
+            List<OrderData> orderData = dataAccess.GetReceivedOrdersByMonth();
+
+            OrderSeries = new SeriesCollection
+            {
+                new ColumnSeries
+                {
+                    Title = "Orders Received",
+                    Values = new ChartValues<int>(orderData.Select(x => x.OrdersReceived))
+                }
+            };
+
+            Labels = orderData.Select(x => x.Month).ToArray();
+            Formatter = value => value.ToString("N0");
+
+            DataContext = this;
         }
 
         //Нажатие на кнопку "Итоги дня"
@@ -55,7 +84,6 @@ namespace PVZ
             MonthResaultEmployees.Visibility = Visibility.Hidden;
             MonthResaultDays.Visibility = Visibility.Visible;
             GeneralResualt.Visibility = Visibility.Hidden;
-
         }
 
         private void Employees_Click(object sender, RoutedEventArgs e)
@@ -73,12 +101,11 @@ namespace PVZ
             MonthResaultDays.Visibility = Visibility.Visible;
             GeneralResualt.Visibility = Visibility.Hidden;
         }
-        //Нажатие на кнопку "Общие итоги ПВЗ"
-        /*private void Button_Click3(object sender, RoutedEventArgs e)
+
+        private void Serch_Click(object sender, RoutedEventArgs e)
         {
-            DayResualt.Visibility = Visibility.Hidden;
-            MonthResault.Visibility = Visibility.Hidden;
-            GeneralResualt.Visibility = Visibility.Visible;
-        }*/
+            InventoryData = dbConnector.GetInventoryDataDays(Convert.ToDateTime(SelecteMonth));
+            InventoryListView3.DataContext = this;
+        }
     }
 }

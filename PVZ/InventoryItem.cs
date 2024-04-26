@@ -27,8 +27,8 @@ namespace PVZ
     }
     public class Inventory
     {
-        public DateTime day { get; set; }
-        public int ordersReceived { get; set; }
-        public int ordersIssued {  get; set; }
+        public string Day { get; set; }
+        public string OrdersReceived { get; set; }
+        public string OrdersIssued {  get; set; }
     }
 }

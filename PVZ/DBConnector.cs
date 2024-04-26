@@ -9,6 +9,10 @@ using System.Collections;
 using static IronPython.Modules.PythonCsvModule;
 using System.Windows.Controls;
 using System.Data;
+using static IronPython.Modules.PythonDateTime;
+using static PVZ.DBConnector;
+using static PVZ.Dashboard;
+using System.Globalization;
 
 namespace PVZ
 {
@@ -372,26 +376,29 @@ namespace PVZ
                 }
             }
         }
-        public int GetOrdersReceivedDay(int selectedDate)
+        public List<Inventory> GetInventoryDataDays(DateTime date)
         {
-            int count = 0;
-            using (SqlConnection connection = new SqlConnection(ConnectionString))
+            List<Inventory> inventory = new List<Inventory>();
+
+            int daysInMonth = DateTime.DaysInMonth(date.Year, date.Month);
+
+
+            for (int day = 1; day <= daysInMonth; day++)
             {
-                connection.Open();
+                DateTime selectedDay = new DateTime(date.Year, date.Month, day);
+                int ordersReceived = GetOrdersReceivedDay(selectedDay);
+                int ordersIssued = GetOrdersIssuedDay(selectedDay);
 
-                string query = "SELECT COUNT(*) FROM Orders WHERE CONVERT(DATE, ArrivedDate) = @SelectedDate AND Status='Прибыл'";
-
-                using (SqlCommand command = new SqlCommand(query, connection))
+                Inventory item = new Inventory
                 {
-                    command.Parameters.AddWithValue("@SelectedDate", selectedDate.Date);
-                    object result = command.ExecuteScalar();
-                    if (result != null && result != DBNull.Value)
-                    {
-                        count = Convert.ToInt32(result);
-                    }
-                }
+                    Day = Convert.ToString(day),
+                    OrdersReceived = Convert.ToString(ordersReceived),
+                    OrdersIssued = Convert.ToString(ordersIssued)
+                };
+                inventory.Add(item);
             }
-            return count;
+
+            return inventory;
         }
         public int GetOrdersIssuedDay(DateTime selectedDate)
         {
@@ -400,7 +407,7 @@ namespace PVZ
             {
                 connection.Open();
 
-                string query = "SELECT COUNT(*) FROM Orders WHERE CONVERT(DATE, ArrivedDate) = @SelectedDate AND Status='Выдан'";
+                string query = "SELECT COUNT(*) FROM Orders WHERE CAST(ArrivedDate AS DATE) = @SelectedDate AND Status='Выдан'";
 
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
@@ -414,28 +421,26 @@ namespace PVZ
             }
             return count;
         }
-
-        public List<Inventory> DayInventoy()
+        public int GetOrdersReceivedDay(DateTime selectedDate)
         {
-            List<Inventory> inventory = new List<Inventory>();
-
-            for (int selectedDate = 0; selectedDate <= 31; selectedDate++)
+            int count = 0;
+            using (SqlConnection connection = new SqlConnection(ConnectionString))
             {
-                int ordersReceived = GetOrdersReceivedDay(selectedDate);
-                int ordersIssued = GetOrdersIssuedDay(selectedDate);
+                connection.Open();
 
-                Inventory item = new Inventory
+                string query = "SELECT COUNT(*) FROM Orders WHERE CAST(ArrivedDate AS DATE) = @SelectedDate AND Status='Прибыл'";
+
+                using (SqlCommand command = new SqlCommand(query, connection))
                 {
-                    Day = day,
-                    // ... (Set other Inventory properties) ... 
-                    OrdersReceived = ordersReceived,
-                    OrdersIssued = ordersIssued
-                };
-
-                inventory.Add(item);
+                    command.Parameters.AddWithValue("@SelectedDate", selectedDate.Date);
+                    object result = command.ExecuteScalar();
+                    if (result != null && result != DBNull.Value)
+                    {
+                        count = Convert.ToInt32(result);
+                    }
+                }
             }
-
-            return inventory;
+            return count;
         }
 
 
@@ -583,6 +588,33 @@ namespace PVZ
                     return Convert.ToInt32(command.ExecuteScalar());
                 }
             }
+        }
+    }
+    public class OrderDataAccess
+    {
+        public List<OrderData> GetReceivedOrdersByMonth()
+        {
+            List<OrderData> orderData = new List<OrderData>();
+            string query = @"SELECT MONTH(ArrivedDate) AS Month, COUNT(*) AS OrdersReceived FROM Orders WHERE Status = 'Принят' GROUP BY MONTH(ArrivedDate) ORDER BY MONTH(ArrivedDate)";
+
+            using (SqlConnection connection = new SqlConnection(ConnectionString))
+            {
+                SqlCommand command = new SqlCommand(query, connection);
+                connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    int monthNumber = reader.GetInt32(0); // Получаем номер месяца
+                    string monthName = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(monthNumber); // Получаем имя месяца по номеру
+
+                    orderData.Add(new OrderData
+                    {
+                        Month = monthName,
+                        OrdersReceived = reader.GetInt32(1)
+                    });
+                }
+            }
+            return orderData;
         }
     }
 }
