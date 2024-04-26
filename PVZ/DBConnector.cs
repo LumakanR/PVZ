@@ -595,7 +595,7 @@ namespace PVZ
         public List<OrderData> GetReceivedOrdersByMonth()
         {
             List<OrderData> orderData = new List<OrderData>();
-            string query = @"SELECT MONTH(ArrivedDate) AS Month, COUNT(*) AS OrdersReceived FROM Orders WHERE Status = 'Принят' GROUP BY MONTH(ArrivedDate) ORDER BY MONTH(ArrivedDate)";
+            string query = @"SELECT MONTH(ArrivedDate) AS MonthNumber, DATENAME(MONTH, ArrivedDate) AS MonthName, COUNT(*) AS OrdersReceived FROM Orders WHERE Status = 'Прибыл' GROUP BY MONTH(ArrivedDate), DATENAME(MONTH, ArrivedDate) ORDER BY MONTH(ArrivedDate)";
 
             using (SqlConnection connection = new SqlConnection(ConnectionString))
             {
@@ -604,16 +604,19 @@ namespace PVZ
                 SqlDataReader reader = command.ExecuteReader();
                 while (reader.Read())
                 {
-                    int monthNumber = reader.GetInt32(0); // Получаем номер месяца
-                    string monthName = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(monthNumber); // Получаем имя месяца по номеру
+                    int monthNumber = reader.GetInt32(0);
+                    string monthName = reader.GetString(1);
+                    int ordersReceived = reader.GetInt32(2);
 
                     orderData.Add(new OrderData
                     {
                         Month = monthName,
-                        OrdersReceived = reader.GetInt32(1)
+                        MonthNumber = monthNumber,
+                        OrdersReceived = ordersReceived
                     });
                 }
             }
+
             return orderData;
         }
     }

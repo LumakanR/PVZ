@@ -1,58 +1,64 @@
-﻿using System;
+﻿using LiveCharts.Wpf;
+using LiveCharts;
+using PVZ;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using LiveCharts;
-using LiveCharts.Wpf;
+using System.Linq;
 
-
-namespace PVZ {
-public class ChartViewModel : INotifyPropertyChanged
+public class ChartViewModel
 {
+    public ObservableCollection<string> MonthLabels { get; set; }
+
+    public ChartViewModel()
+    {
+        // Инициализация коллекции меток месяцев
+        MonthLabels = new ObservableCollection<string>
+        {
+            "Январь (1)", "Февраль (2)", "Март (3)", "Апрель (4)",
+            "Май (5)", "Июнь (6)", "Июль (7)", "Август (8)",
+            "Сентябрь (9)", "Октябрь (10)", "Ноябрь (11)", "Декабрь (12)"
+        };
+    }
+}
+public class ChartViewModel2 : INotifyPropertyChanged
+{
+    private List<string> _monthLabels;
+    public List<string> MonthLabels
+    {
+        get { return _monthLabels; }
+        set { _monthLabels = value; NotifyPropertyChanged(nameof(MonthLabels)); }
+    }
+
     private SeriesCollection _orderSeries;
     public SeriesCollection OrderSeries
     {
         get { return _orderSeries; }
-        set
-        {
-            _orderSeries = value;
-            OnPropertyChanged(nameof(OrderSeries));
-        }
+        set { _orderSeries = value; NotifyPropertyChanged(nameof(OrderSeries)); }
     }
 
-    private ObservableCollection<string> _monthLabels;
-    public ObservableCollection<string> MonthLabels
+    public ChartViewModel2()
     {
-        get { return _monthLabels; }
-        set
-        {
-            _monthLabels = value;
-            OnPropertyChanged(nameof(MonthLabels));
-        }
-    }
+        // Получение данных о количестве заказов для каждого месяца
+        var orderDataAccess = new OrderDataAccess();
+        var orderData = orderDataAccess.GetReceivedOrdersByMonth();
 
-    public ChartViewModel()
-    {
-        // Создаем коллекцию месяцев
-        MonthLabels = new ObservableCollection<string>(
-            new string[] { "January", "February", "March", "April", "May", "June",
-                           "July", "August", "September", "October", "November", "December" });
+        // Заполнение меток месяцев
+        MonthLabels = orderData.Select(o => o.Month).ToList();
 
-        // Пример данных для графика (замените на ваши данные)
-        OrderSeries = new SeriesCollection
+        // Создание серии данных для графика
+        var series = new ColumnSeries
         {
-            new LineSeries
-            {
-                Title = "Orders Received",
-                Values = new ChartValues<int> { 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65 }
-            }
+            Title = "Orders Received",
+            Values = new ChartValues<int>(orderData.Select(o => o.OrdersReceived))
         };
+
+        OrderSeries = new SeriesCollection { series };
     }
 
     public event PropertyChangedEventHandler PropertyChanged;
-    protected virtual void OnPropertyChanged(string propertyName)
+    protected void NotifyPropertyChanged(string propertyName)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }
-    }

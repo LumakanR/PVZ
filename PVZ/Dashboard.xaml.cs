@@ -34,6 +34,7 @@ namespace PVZ
         public class OrderData
         {
             public string Month { get; set; }
+            public int MonthNumber {  get; set; }
             public int OrdersReceived { get; set; }
         }
 
@@ -44,6 +45,8 @@ namespace PVZ
             DataContext = new ChartViewModel();
             OrderDataAccess dataAccess = new OrderDataAccess();
             List<OrderData> orderData = dataAccess.GetReceivedOrdersByMonth();
+            ChartViewModel viewModel = new ChartViewModel();
+            DataContext = viewModel;
 
             OrderSeries = new SeriesCollection
             {
