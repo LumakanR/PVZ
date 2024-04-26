@@ -1,0 +1,160 @@
+﻿<Window x:Class="PVZ.Dashboard"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PVZ"
+        mc:Ignorable="d"
+        Title="Dashboard" Height="450" Width="800">
+    <Grid>
+        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Center">
+            <Button Name ="dayResualt" Margin="0,29,0,0" Height="77" Width="179" Click="Button_Click1">
+                <TextBlock Text="Итоги дня" TextWrapping="Wrap" TextTrimming="WordEllipsis" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"/>
+            </Button>
+            <Button Name ="monthResault"  Height="77" Margin="0,10,0,10" Width="179" Click="Button_Click_2">
+                <TextBlock Text="Итоги месяца" TextWrapping="Wrap" TextTrimming="WordEllipsis" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"/>
+            </Button>
+            <Button Name ="generalResault" Height="77" Width="180" Click="Button_Click3" Margin="0,0,0,29">
+                <TextBlock Text="Общие показатели ПВЗ" TextWrapping="Wrap" TextTrimming="WordEllipsis" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" Width="125"/>
+            </Button>
+        </StackPanel>
+        <StackPanel Visibility="Hidden" x:Name ="DayResualt" Margin="217,10,0,0" >
+            <Label Content="Заказов получено"/>
+            <TextBox IsReadOnly="True" x:Name = "ordersReceived1" Width="342" Margin="50, -20, 0, 0"/>
+            <Label Content="Заказов выдано"/>
+            <TextBox IsReadOnly="True" Name = "ordersIssued1" Width="342" Margin="50, -20, 0, 0"/>
+            <Label Content="Заказов на хранении"/>
+            <TextBox IsReadOnly="True" Name="ordersInStorage1" Width="342" Margin="50, -20, 0, 0"/>
+            <ListView x:Name="InventoryListView1" Margin="0,20,0,0">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Order Number" DisplayMemberBinding="{Binding OrderNumber}" />
+                        <GridViewColumn Header="Arrived Date" DisplayMemberBinding="{Binding ArrivedDate}" />
+                        <GridViewColumn Header="Status" DisplayMemberBinding="{Binding Status}" />
+                        <GridViewColumn Header="ClientPhoneNumber" DisplayMemberBinding="{Binding ClientPhoneNumber}" />
+                        <GridViewColumn Header="RackID" DisplayMemberBinding="{Binding RackID}" />
+                        <GridViewColumn Header="CellID" DisplayMemberBinding="{Binding CellID}" />
+                        <GridViewColumn Header="Remaining Days">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding RemainingDays}">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding RemainingDays}" Value="5">
+                                                        <Setter Property="Background" Value="Green" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding RemainingDays}" Value="4">
+                                                        <Setter Property="Background" Value="Yellow" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding RemainingDays}" Value="3">
+                                                        <Setter Property="Background" Value="Orange" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding RemainingDays}" Value="2">
+                                                        <Setter Property="Background" Value="Red" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </StackPanel>
+        <StackPanel Visibility="Hidden" x:Name ="MonthResault" Margin="217,10,0,0">
+            <Label Content="Заказов получено"/>
+            <TextBox IsReadOnly="True" x:Name = "ordersReceived2" Width="342" Margin="50, -20, 0, 0"/>
+            <Label Content="Заказов выдано"/>
+            <TextBox IsReadOnly="True" Name = "ordersIssued2" Width="342" Margin="50, -20, 0, 0"/>
+            <Label Content="Заказов на хранении"/>
+            <TextBox IsReadOnly="True" Name="ordersInStorage2" Width="342" Margin="50, -20, 0, 0"/>
+            <ListView x:Name="InventoryListView2" Margin="0,20,0,0">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Order Number" DisplayMemberBinding="{Binding OrderNumber}" />
+                        <GridViewColumn Header="Arrived Date" DisplayMemberBinding="{Binding ArrivedDate}" />
+                        <GridViewColumn Header="Status" DisplayMemberBinding="{Binding Status}" />
+                        <GridViewColumn Header="ClientPhoneNumber" DisplayMemberBinding="{Binding ClientPhoneNumber}" />
+                        <GridViewColumn Header="RackID" DisplayMemberBinding="{Binding RackID}" />
+                        <GridViewColumn Header="CellID" DisplayMemberBinding="{Binding CellID}" />
+                        <GridViewColumn Header="Remaining Days">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding RemainingDays}">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding RemainingDays}" Value="5">
+                                                        <Setter Property="Background" Value="Green" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding RemainingDays}" Value="4">
+                                                        <Setter Property="Background" Value="Yellow" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding RemainingDays}" Value="3">
+                                                        <Setter Property="Background" Value="Orange" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding RemainingDays}" Value="2">
+                                                        <Setter Property="Background" Value="Red" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </StackPanel>
+        <StackPanel Visibility="Hidden" x:Name ="GeneralResualt" Margin="217,10,0,0">
+            <Label Content="Заказов получено"/>
+            <TextBox IsReadOnly="True" x:Name = "ordersReceived3" Width="342" Margin="50, -20, 0, 0"/>
+            <Label Content="Заказов выдано"/>
+            <TextBox IsReadOnly="True" Name = "ordersIssued3" Width="342" Margin="50, -20, 0, 0"/>
+            <Label Content="Заказов на хранении"/>
+            <TextBox IsReadOnly="True" Name="ordersInStorage3" Width="342" Margin="50, -20, 0, 0"/>
+            <ListView x:Name="InventoryListView3" Margin="0,20,0,0">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Order Number" DisplayMemberBinding="{Binding OrderNumber}" />
+                        <GridViewColumn Header="Arrived Date" DisplayMemberBinding="{Binding ArrivedDate}" />
+                        <GridViewColumn Header="Status" DisplayMemberBinding="{Binding Status}" />
+                        <GridViewColumn Header="ClientPhoneNumber" DisplayMemberBinding="{Binding ClientPhoneNumber}" />
+                        <GridViewColumn Header="RackID" DisplayMemberBinding="{Binding RackID}" />
+                        <GridViewColumn Header="CellID" DisplayMemberBinding="{Binding CellID}" />
+                        <GridViewColumn Header="Remaining Days">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding RemainingDays}">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding RemainingDays}" Value="5">
+                                                        <Setter Property="Background" Value="Green" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding RemainingDays}" Value="4">
+                                                        <Setter Property="Background" Value="Yellow" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding RemainingDays}" Value="3">
+                                                        <Setter Property="Background" Value="Orange" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding RemainingDays}" Value="2">
+                                                        <Setter Property="Background" Value="Red" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </StackPanel>
+    </Grid>
+</Window>
