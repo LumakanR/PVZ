@@ -1,17 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.ComponentModel;
 using System.Data.Common;
-using System.Data.SqlClient;
 using System.Windows;
+using static IronPython.SQLite.PythonSQLite;
+using System.Collections;
+using static IronPython.Modules.PythonCsvModule;
 using System.Windows.Controls;
+using System.Data;
 
 namespace PVZ
 {
     internal class DBConnector
     {
         SqlConnection sqlConnection = new SqlConnection(@"Data Source=DESKTOP-NOO2N4A;Integrated Security=True");
-        private const string ConnectionString = "Data Source=DESKTOP-NOO2N4A;Initial Catalog=PVZ_CHEMP;Integrated Security=True";
+        public const string ConnectionString = "Data Source=DESKTOP-NOO2N4A;Initial Catalog=PVZ_CHEMP;Integrated Security=True";
 
         public void openConnection()
         {
@@ -122,7 +126,7 @@ namespace PVZ
                 }
             }
         }
-        
+
         public int GetCellsOccupied()
         {
             using (SqlConnection connection = new SqlConnection(ConnectionString))
@@ -155,7 +159,7 @@ namespace PVZ
                 }
             }
         }
-        
+
         //
         public void ChangePassword(string username, string newPassword)
         {
@@ -229,7 +233,7 @@ namespace PVZ
                 // Вставляем новую запись в таблицу Clients
                 string queryInsert = "INSERT INTO Clients (ClientPhoneNumber) VALUES (@ClientPhoneNumber)";
 
-                    using (SqlCommand commandInsert = new SqlCommand(queryInsert, connection))
+                using (SqlCommand commandInsert = new SqlCommand(queryInsert, connection))
                 {
                     commandInsert.Parameters.AddWithValue("@ClientPhoneNumber", clientPhoneNumber);
                     commandInsert.ExecuteNonQuery();
@@ -368,6 +372,73 @@ namespace PVZ
                 }
             }
         }
+        public int GetOrdersReceivedDay(int selectedDate)
+        {
+            int count = 0;
+            using (SqlConnection connection = new SqlConnection(ConnectionString))
+            {
+                connection.Open();
+
+                string query = "SELECT COUNT(*) FROM Orders WHERE CONVERT(DATE, ArrivedDate) = @SelectedDate AND Status='Прибыл'";
+
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@SelectedDate", selectedDate.Date);
+                    object result = command.ExecuteScalar();
+                    if (result != null && result != DBNull.Value)
+                    {
+                        count = Convert.ToInt32(result);
+                    }
+                }
+            }
+            return count;
+        }
+        public int GetOrdersIssuedDay(DateTime selectedDate)
+        {
+            int count = 0;
+            using (SqlConnection connection = new SqlConnection(ConnectionString))
+            {
+                connection.Open();
+
+                string query = "SELECT COUNT(*) FROM Orders WHERE CONVERT(DATE, ArrivedDate) = @SelectedDate AND Status='Выдан'";
+
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@SelectedDate", selectedDate.Date);
+                    object result = command.ExecuteScalar();
+                    if (result != null && result != DBNull.Value)
+                    {
+                        count = Convert.ToInt32(result);
+                    }
+                }
+            }
+            return count;
+        }
+
+        public List<Inventory> DayInventoy()
+        {
+            List<Inventory> inventory = new List<Inventory>();
+
+            for (int selectedDate = 0; selectedDate <= 31; selectedDate++)
+            {
+                int ordersReceived = GetOrdersReceivedDay(selectedDate);
+                int ordersIssued = GetOrdersIssuedDay(selectedDate);
+
+                Inventory item = new Inventory
+                {
+                    Day = day,
+                    // ... (Set other Inventory properties) ... 
+                    OrdersReceived = ordersReceived,
+                    OrdersIssued = ordersIssued
+                };
+
+                inventory.Add(item);
+            }
+
+            return inventory;
+        }
+
+
 
         public List<InventoryItem> GetInventoryData()
         {

@@ -35,7 +35,8 @@ namespace PVZ
         private void Button_Click1(object sender, RoutedEventArgs e)
         {
             DayResualt.Visibility = Visibility.Visible;
-            MonthResault.Visibility = Visibility.Hidden;
+            MonthResaultEmployees.Visibility = Visibility.Hidden;
+            MonthResaultDays.Visibility = Visibility.Hidden;
             GeneralResualt.Visibility = Visibility.Hidden;
 
             ordersReceived1.Text = Convert.ToString(dbConnector.GetDayReceived());
@@ -51,17 +52,33 @@ namespace PVZ
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
             DayResualt.Visibility = Visibility.Hidden;
-            MonthResault.Visibility = Visibility.Visible;
+            MonthResaultEmployees.Visibility = Visibility.Hidden;
+            MonthResaultDays.Visibility = Visibility.Visible;
             GeneralResualt.Visibility = Visibility.Hidden;
 
         }
 
+        private void Employees_Click(object sender, RoutedEventArgs e)
+        {
+            DayResualt.Visibility = Visibility.Hidden;
+            MonthResaultEmployees.Visibility = Visibility.Visible;
+            MonthResaultDays.Visibility = Visibility.Hidden;
+            GeneralResualt.Visibility = Visibility.Hidden;
+        }
+
+        private void Days_Click(object sender, RoutedEventArgs e)
+        {
+            DayResualt.Visibility = Visibility.Hidden;
+            MonthResaultEmployees.Visibility = Visibility.Hidden;
+            MonthResaultDays.Visibility = Visibility.Visible;
+            GeneralResualt.Visibility = Visibility.Hidden;
+        }
         //Нажатие на кнопку "Общие итоги ПВЗ"
-        private void Button_Click3(object sender, RoutedEventArgs e)
+        /*private void Button_Click3(object sender, RoutedEventArgs e)
         {
             DayResualt.Visibility = Visibility.Hidden;
             MonthResault.Visibility = Visibility.Hidden;
             GeneralResualt.Visibility = Visibility.Visible;
-        }
+        }*/
     }
 }

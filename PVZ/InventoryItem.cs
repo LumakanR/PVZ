@@ -25,4 +25,10 @@ namespace PVZ
             StoragePeriod = 5; // По умолчанию 5 дней
         }
     }
+    public class Inventory
+    {
+        public DateTime day { get; set; }
+        public int ordersReceived { get; set; }
+        public int ordersIssued {  get; set; }
+    }
 }
