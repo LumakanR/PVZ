@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -11,6 +12,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using LiveCharts;
+using LiveCharts.Defaults;
+using LiveCharts.Wpf;
 
 namespace PVZ
 {
@@ -27,6 +31,7 @@ namespace PVZ
             dbConnector = new DBConnector();
         }
 
+        //Нажатие на кнопку "Итоги дня"
         private void Button_Click1(object sender, RoutedEventArgs e)
         {
             DayResualt.Visibility = Visibility.Visible;
@@ -36,19 +41,22 @@ namespace PVZ
             ordersReceived1.Text = Convert.ToString(dbConnector.GetDayReceived());
             ordersIssued1.Text = Convert.ToString(dbConnector.GetDayIssued());
             ordersInStorage1.Text = Convert.ToString(dbConnector.GetDayInStorage());
+            cellsFree.Text = Convert.ToString(dbConnector.GetCellsFree());
+            cellsOccupied.Text = Convert.ToString(dbConnector.GetCellsOccupied());
+            shelfLifeExpires.Text = Convert.ToString(dbConnector.GetCellsShelfLifeExpires());
         }
 
+
+        // Нажатие на кнопку "Итоги месяца"
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
             DayResualt.Visibility = Visibility.Hidden;
             MonthResault.Visibility = Visibility.Visible;
             GeneralResualt.Visibility = Visibility.Hidden;
 
-            ordersReceived2.Text = Convert.ToString(dbConnector.GetMonthReceived());
-            ordersIssued2.Text = Convert.ToString(dbConnector.GetMonthIssued());
-            //ordersInStorage2.Text = Convert.ToString(dbConnector.GetMonthInStorage());
         }
 
+        //Нажатие на кнопку "Общие итоги ПВЗ"
         private void Button_Click3(object sender, RoutedEventArgs e)
         {
             DayResualt.Visibility = Visibility.Hidden;

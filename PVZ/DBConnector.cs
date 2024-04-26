@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Windows;
@@ -9,8 +10,8 @@ namespace PVZ
 {
     internal class DBConnector
     {
-        SqlConnection sqlConnection = new SqlConnection(@"Data Source=GRIM_LORD\GRIM_LORD;Integrated Security=True");
-        private const string ConnectionString = "Data Source=GRIM_LORD\\GRIM_LORD;Initial Catalog=PVZ_CHEMP;Integrated Security=True";
+        SqlConnection sqlConnection = new SqlConnection(@"Data Source=DESKTOP-NOO2N4A;Integrated Security=True");
+        private const string ConnectionString = "Data Source=DESKTOP-NOO2N4A;Initial Catalog=PVZ_CHEMP;Integrated Security=True";
 
         public void openConnection()
         {
@@ -77,7 +78,7 @@ namespace PVZ
             {
                 connection.Open();
 
-                string query = "SELECT COUNT(*) FROM Orders WHERE CONVERT(date, ArrivedDate) = CONVERT(date, GETDATE()) AND Status = 'Прибыл'";
+                string query = "SELECT COUNT(*) FROM Orders WHERE CONVERT(date, IssuedDate) = CONVERT(date, GETDATE()) AND Status = 'Выдан'";
 
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
@@ -105,60 +106,56 @@ namespace PVZ
             }
         }
 
-        public int GetMonthReceived()
+        public int GetCellsFree()
         {
             using (SqlConnection connection = new SqlConnection(ConnectionString))
             {
                 connection.Open();
 
-                DateTime currentDate = DateTime.Today;
-
-                // Находим первый день последнего месяца от текущей даты
-                DateTime firstDayOfLastMonth = currentDate.AddMonths(-1).AddDays(1 - currentDate.Day);
-
-                // Находим последний день последнего месяца от текущей даты
-                DateTime lastDayOfLastMonth = currentDate.AddDays(-currentDate.Day);
-
-                string query = "SELECT COUNT(*) FROM Orders WHERE ArrivedDate >= @FirstDayOfLastMonth AND ArrivedDate <= @LastDayOfLastMonth AND Status = 'Прибыл'";
+                string query = "SELECT COUNT(*) FROM Orders WHERE Status = 'Прибыл'";
 
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@FirstDayOfLastMonth", firstDayOfLastMonth);
-                    command.Parameters.AddWithValue("@LastDayOfLastMonth", lastDayOfLastMonth);
-
-                    int count = Convert.ToInt32(command.ExecuteScalar());
+                    command.Parameters.AddWithValue("@Today", DateTime.Today);
+                    int count = 50 - Convert.ToInt32(command.ExecuteScalar());
                     return count;
                 }
             }
         }
-
-        public int GetMonthIssued()
+        
+        public int GetCellsOccupied()
         {
             using (SqlConnection connection = new SqlConnection(ConnectionString))
             {
                 connection.Open();
 
-                DateTime currentDate = DateTime.Today;
-
-                // Находим первый день последнего месяца от текущей даты
-                DateTime firstDayOfLastMonth = currentDate.AddMonths(-1).AddDays(1 - currentDate.Day);
-
-                // Находим последний день последнего месяца от текущей даты
-                DateTime lastDayOfLastMonth = currentDate.AddDays(-currentDate.Day);
-
-                string query = "SELECT COUNT(*) FROM Orders WHERE ArrivedDate >= @FirstDayOfLastMonth AND ArrivedDate <= @LastDayOfLastMonth AND Status = 'Выдан'";
+                string query = "SELECT COUNT(*) FROM Orders WHERE Status = 'Прибыл'";
 
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@FirstDayOfLastMonth", firstDayOfLastMonth);
-                    command.Parameters.AddWithValue("@LastDayOfLastMonth", lastDayOfLastMonth);
-
+                    command.Parameters.AddWithValue("@Today", DateTime.Today);
                     int count = Convert.ToInt32(command.ExecuteScalar());
                     return count;
                 }
             }
         }
+        public int GetCellsShelfLifeExpires()
+        {
+            using (SqlConnection connection = new SqlConnection(ConnectionString))
+            {
+                connection.Open();
 
+                string query = "SELECT COUNT(*) FROM Orders WHERE ShelfLifeExpires = 'True'";
+
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@Today", DateTime.Today);
+                    int count = Convert.ToInt32(command.ExecuteScalar());
+                    return count;
+                }
+            }
+        }
+        
         //
         public void ChangePassword(string username, string newPassword)
         {

@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
         xmlns:local="clr-namespace:PVZ"
         mc:Ignorable="d"
         Title="Dashboard" Height="450" Width="800">
@@ -18,51 +19,27 @@
                 <TextBlock Text="Общие показатели ПВЗ" TextWrapping="Wrap" TextTrimming="WordEllipsis" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" Width="125"/>
             </Button>
         </StackPanel>
-        <StackPanel Visibility="Hidden" x:Name ="DayResualt" Margin="217,10,0,0" >
+        <StackPanel Visibility="Visible" x:Name ="DayResualt" Margin="217,10,0,0" >
             <Label Content="Заказов получено"/>
-            <TextBox IsReadOnly="True" x:Name = "ordersReceived1" Width="342" Margin="50, -20, 0, 0"/>
+            <TextBox IsReadOnly="True" x:Name = "ordersReceived1" Width="342" Margin="60, -20, 0, 0"/>
             <Label Content="Заказов выдано"/>
-            <TextBox IsReadOnly="True" Name = "ordersIssued1" Width="342" Margin="50, -20, 0, 0"/>
+            <TextBox IsReadOnly="True" Name = "ordersIssued1" Width="342" Margin="60, -20, 0, 0"/>
             <Label Content="Заказов на хранении"/>
-            <TextBox IsReadOnly="True" Name="ordersInStorage1" Width="342" Margin="50, -20, 0, 0"/>
-            <ListView x:Name="InventoryListView1" Margin="0,20,0,0">
-                <ListView.View>
-                    <GridView>
-                        <GridViewColumn Header="Order Number" DisplayMemberBinding="{Binding OrderNumber}" />
-                        <GridViewColumn Header="Arrived Date" DisplayMemberBinding="{Binding ArrivedDate}" />
-                        <GridViewColumn Header="Status" DisplayMemberBinding="{Binding Status}" />
-                        <GridViewColumn Header="ClientPhoneNumber" DisplayMemberBinding="{Binding ClientPhoneNumber}" />
-                        <GridViewColumn Header="RackID" DisplayMemberBinding="{Binding RackID}" />
-                        <GridViewColumn Header="CellID" DisplayMemberBinding="{Binding CellID}" />
-                        <GridViewColumn Header="Remaining Days">
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding RemainingDays}">
-                                        <TextBlock.Style>
-                                            <Style TargetType="TextBlock">
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding RemainingDays}" Value="5">
-                                                        <Setter Property="Background" Value="Green" />
-                                                    </DataTrigger>
-                                                    <DataTrigger Binding="{Binding RemainingDays}" Value="4">
-                                                        <Setter Property="Background" Value="Yellow" />
-                                                    </DataTrigger>
-                                                    <DataTrigger Binding="{Binding RemainingDays}" Value="3">
-                                                        <Setter Property="Background" Value="Orange" />
-                                                    </DataTrigger>
-                                                    <DataTrigger Binding="{Binding RemainingDays}" Value="2">
-                                                        <Setter Property="Background" Value="Red" />
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </TextBlock.Style>
-                                    </TextBlock>
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                    </GridView>
-                </ListView.View>
-            </ListView>
+            <TextBox IsReadOnly="True" Name="ordersInStorage1" Width="342" Margin="60, -20, 0, 0"/>
+            <Label Content="Ячеек свободно"/>
+            <TextBox IsReadOnly="True" Name="cellsFree" Width="342" Margin="60, -20, 0, 0"/>
+            <Label Content="Ячеек занято"/>
+            <TextBox IsReadOnly="True" Name="cellsOccupied" Width="342" Margin="60, -20, 0, 0"/>
+            <Label Content="Истекает срок хранения"/>
+            <TextBox IsReadOnly="True" Name="shelfLifeExpires" Width="342" Margin="60, -20, 0, 0"/>
+            <lvc:CartesianChart Height="200" Series="{Binding SeriesCollection}">
+                <lvc:CartesianChart.AxisX>
+                    <lvc:Axis Title="Hours" Labels="{Binding Labels}"/>
+                </lvc:CartesianChart.AxisX>
+                <lvc:CartesianChart.AxisY>
+                    <lvc:Axis Title="Orders"/>
+                </lvc:CartesianChart.AxisY>
+            </lvc:CartesianChart>
         </StackPanel>
         <StackPanel Visibility="Hidden" x:Name ="MonthResault" Margin="217,10,0,0">
             <Label Content="Заказов получено"/>
